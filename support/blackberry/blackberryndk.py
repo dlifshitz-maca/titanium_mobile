@@ -89,7 +89,7 @@ class BlackberryNDK:
 			command = ['bash', '-c', 'source %s && env' % envFile]
 
 		try:
-			proc = subprocess.Popen(command, stdout = subprocess.PIPE)
+			proc = subprocess.Popen(command, stdout = subprocess.PIPE, shell=True)
 		except OSError, e:
 			print >>sys.stderr, e
 			return
@@ -128,7 +128,7 @@ class BlackberryNDK:
 	def _run(self, command):
 		assert type(command) is list
 		try:
-			subprocess.check_output(command, stderr = subprocess.STDOUT)
+			subprocess.check_output(command, stderr = subprocess.STDOUT, shell=True)
 		except subprocess.CalledProcessError, cpe:
 			print >>sys.stderr, cpe, cpe.output
 			return
@@ -145,15 +145,24 @@ class BlackberryNDK:
 
 	def build(self, project, variant):
 		assert os.path.exists(project)
-		command = ['mkbuild', project, '-variant', variant]
+		#command = ['mkbuild', project, '-variant', variant]
+		bashbb = os.path.join(self.blackberryNdk, 'host', 'win32', 'x86', 'usr', 'bin', 'bash.exe')
+		mkbuild = os.path.join(self.blackberryNdk, 'host', 'win32', 'x86', 'usr', 'bin', 'mkbuild')
+		command = [bashbb, mkbuild, project, '-variant', variant]
+		os.environ['TEMP'] = 'C:\\DOCUME~1\\MacUser\\LOCALS~1\\Temp'
+		os.environ['TMP'] = 'C:\\DOCUME~1\\MacUser\\LOCALS~1\\Temp'
 		self._run(command)
 
 	def package(self, package, savePath, projectName):
-		command = ['blackberry-nativepackager', '-package', package, 'bar-descriptor.xml', '-e', savePath, projectName, 'icon.png']
+		#command = ['blackberry-nativepackager', '-package', package, 'bar-descriptor.xml', '-e', savePath, projectName, 'icon.png']
+		nnn = os.path.join(self.blackberryNdk, 'host', 'win32', 'x86', 'usr', 'bin', 'blackberry-nativepackager.bat')
+		command = [nnn, '-package', package, 'bar-descriptor.xml', '-e', savePath, projectName, 'icon.png']
 		self._run(command)
 
 	def deploy(self, deviceIP, package):
-		command = ['blackberry-deploy', '-installApp', '-launchApp', '-device', deviceIP, '-package', package]
+		#command = ['blackberry-deploy', '-installApp', '-launchApp', '-device', deviceIP, '-package', package]
+		ddd = os.path.join(self.blackberryNdk, 'host', 'win32', 'x86', 'usr', 'bin', 'blackberry-deploy.bat')
+		command = [ddd, '-installApp', '-launchApp', '-device', deviceIP, '-package', package]
 		self._run(command)
 
 def __runUnitTests():
