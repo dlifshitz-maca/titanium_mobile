@@ -21,9 +21,9 @@ from tiapp import TiAppXML
 from blackberryndk import BlackberryNDK
 
 class Builder(object):
-	_type2variant = {'simulator' : 'Simulator-Debug',
-	                 'device' : 'Device-Debug',
-	                 'deploy' : 'Device-Release'}
+	_type2variant = {'simulator' : 'o-g',
+	                 'device' : 'a.le-v7-g',
+	                 'deploy' : 'a.le-v7'}
 
 	def __init__(self, project_dir, type, ndk):
 		self.top_dir = project_dir.rstrip(os.sep)
@@ -48,8 +48,12 @@ class Builder(object):
 		# TODO Mac: log each command that is executed to the build.log file,
 		# output might be interesting as well
 		# TODO Mac: See if we can reasonably launch the simulator from here and fetch the ip address
-		barPath = os.path.join(self.buildDir, self.variant, '%s.bar' % self.name)
-		savePath = os.path.join(self.buildDir, self.variant, self.name)
+		
+		# FIXME: hardcoded for demo
+		cpu = 'x86'
+		
+		barPath = os.path.join(self.buildDir, cpu, self.variant, '%s.bar' % self.name)
+		savePath = os.path.join(self.buildDir, cpu, self.variant, self.name)
 		self.ndk.package(barPath, savePath, self.name)
 		self.ndk.deploy('192.168.135.129', barPath)
 	

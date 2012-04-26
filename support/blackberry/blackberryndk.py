@@ -172,7 +172,7 @@ class BlackberryNDK:
 			packager = 'blackberry-nativepackager.bat'
 		else:
 			packager = 'blackberry-nativepackager'
-		command = [packager, '-package', package, 'bar-descriptor.xml', '-e', savePath, projectName, 'icon.png']
+		command = [packager, '-package', package, 'bar-descriptor.xml', '-e', savePath, projectName, 'icon.png', 'assets']
 		self._run(command)
 
 	def deploy(self, deviceIP, package):
