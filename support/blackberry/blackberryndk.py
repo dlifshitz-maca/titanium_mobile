@@ -57,9 +57,9 @@ class BlackberryNDK:
 
 		if platform.system() == 'Windows':
 			# TODO Mac: find out where the NDK installs on windows
-			default_dirs = ['C:\\bbndk-2.0.0']
+			default_dirs = ['C:\\bbndk-10.0.03']
 		else:
-			default_dirs = ['/Developer/SDKs/bbndk-2.0.0', '/opt/bbndk-2.0.0', '~/bbndk-2.0.0', '~/opt/bbndk-2.0.0']
+			default_dirs = ['/Developer/SDKs/bbndk-10.0.03', '/opt/bbndk-10.0.03', '~/bbndk-10.0.03', '~/opt/bbndk-10.0.03']
 
 		for default_dir in default_dirs:
 			if os.path.exists(default_dir):
@@ -155,7 +155,17 @@ class BlackberryNDK:
 		else:
 			mkbuild = 'mkbuild'
 		command = [mkbuild, project, '-variant', variant]
+		
+		oldPath = os.getcwd()
+		os.chdir(project)
+		
+		# FIXME: hardcoded for demo
+		cpulist = 'CPULIST=x86'
+		
+		command = ['make', cpulist]
 		self._run(command)
+		
+		os.chdir(oldPath)
 
 	def package(self, package, savePath, projectName):
 		if platform.system() == 'Windows':
