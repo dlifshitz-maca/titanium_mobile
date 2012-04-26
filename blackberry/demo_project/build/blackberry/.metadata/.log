@@ -1,0 +1,10 @@
+!SESSION 2012-04-26 13:39:40.962 -----------------------------------------------
+eclipse.buildId=2.0
+java.version=1.6.0_24
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import C:\dev\titanium_mobile02\blackberry\demo_project\build\blackberry\demo_project
+Command-line arguments:  -os win32 -ws win32 -arch x86 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -consoleLog -data C:\dev\titanium_mobile02\blackberry\demo_project\build\blackberry -import C:\dev\titanium_mobile02\blackberry\demo_project\build\blackberry\demo_project
+
+!ENTRY org.eclipse.cdt.core 1 0 2012-04-26 13:39:46.603
+!MESSAGE Indexed 'demo_project' (2 sources, 65 headers) in 1.38 sec: 7,115 declarations; 9,868 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0.00%)
