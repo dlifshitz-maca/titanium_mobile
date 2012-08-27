@@ -24,6 +24,8 @@ public:
     static void addObjectToParent(TiObject* parent);
     static TiTCPSocketObject* createTCP(NativeObjectFactory* objectFactory);
 
+virtual void setNativeObject(NativeObject* nativeObject);
+
 protected:
     virtual ~TiTCPSocketObject();
     virtual void onCreateStaticMembers();

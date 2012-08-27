@@ -14,11 +14,15 @@
 #include "TiObject.h"
 #include "TiV8Event.h"
 
+#include <QCoreApplication>
+
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <v8.h>
 #pragma GCC diagnostic warning "-Wunused-parameter"
 
 using namespace v8;
+
+#include <QDebug>
 
 #define PROP_SETGET_FUNCTION(NAME)      prop_##NAME
 
@@ -300,20 +304,26 @@ int NativeTCPSocketObject::getPropertyValue(size_t propertyNumber, TiObject* obj
 void NativeTCPSocketObject::setupEvents(TiEventContainerFactory* containerFactory)
 {
     NativeProxyObject::setupEvents(containerFactory);
+qDebug() << "here 07";
     if (eventContainer_ == NULL)
     {
         eventContainer_ = containerFactory->createEventContainer();
     }
+qDebug() << "here 08";
     if (tcpClient_ == NULL)
     {
+qDebug() << "here 09";
         tcpClient_ = new QTcpSocket();
     }
     eventHandler_ = new TCPSocketEventHandler(eventContainer_, this);
+qDebug() << "here 10";
     events_.insert("connected", EventPairSmartPtr(eventContainer_, eventHandler_));
     events_.insert("error", EventPairSmartPtr(eventContainer_, eventHandler_));
     events_.insert("accepted", EventPairSmartPtr(eventContainer_, eventHandler_));
+qDebug() << "here 11";
     QObject::connect(tcpClient_, SIGNAL(connected()), eventHandler_, SLOT(connected()));
     QObject::connect(tcpClient_, SIGNAL(error(QAbstractSocket::SocketError)), eventHandler_, SLOT(error(QAbstractSocket::SocketError)));
+qDebug() << "here 12";
 }
 
 void NativeTCPSocketObject::connect()
@@ -422,7 +432,10 @@ int NativeTCPSocketObject::read(NativeBufferObject* buffer, int offset, int leng
     }
     int bufferLength = buffer->bufferSize();
     int bytesRead = -1;
-    if (tcpClient_->waitForReadyRead())
+    //QCoreApplication::processEvents();
+    qDebug() << "here 01";
+    qDebug() << "here 01b" << tcpClient_;
+    if (false && tcpClient_->waitForReadyRead(2000))
     {
         int bytes = tcpClient_->bytesAvailable();
         if (bytes != 0)
@@ -457,6 +470,7 @@ int NativeTCPSocketObject::read(NativeBufferObject* buffer, int offset, int leng
     {
         eventHandler_->error(tcpClient_->error());
     }
+    qDebug() << "here 02";
 
     return bytesRead;
 }

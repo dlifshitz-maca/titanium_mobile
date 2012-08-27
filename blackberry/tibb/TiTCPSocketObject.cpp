@@ -86,6 +86,11 @@ void TiTCPSocketObject::initializeTiObject(TiObject* parentContext)
     }
 }
 
+void TiTCPSocketObject::setNativeObject(NativeObject* nativeObject)
+{
+    TiObject::setNativeObject(nativeObject);
+}
+
 void TiTCPSocketObject::onCreateStaticMembers()
 {
     TiIOStreamObject::onCreateStaticMembers();

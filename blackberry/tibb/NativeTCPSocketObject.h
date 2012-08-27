@@ -16,6 +16,8 @@
 #include "TiV8Event.h"
 #include "TiTCPSocketObject.h"
 
+#include <QDebug>
+
 class NativeBufferObject;
 class TiObject;
 class TiEventContainerFactory;
@@ -115,6 +117,12 @@ public slots:
         owner_->socketState_ = SOCKET_STATE_CONNECTED;
         eventContainer_->fireEvent();
     }
+    void readyRead()
+    {
+qDebug() << "here 03";
+qDebug() << "here 03b" << owner_->tcpClient_;
+qDebug() << "readAll:" << owner_->tcpClient_->readAll();
+    }
 
     void accepted()
     {
@@ -123,19 +131,31 @@ public slots:
 
         HandleScope handleScope;
         QTcpSocket* inboundSocket = owner_->tcpServer_->nextPendingConnection();
+        qDebug() << "inboundSocket state:" << inboundSocket->state();
         Handle<Value> socketObj = eventContainer_->getV8ValueProperty("socket");
         Handle<ObjectTemplate> global = TiObject::getObjectTemplateFromJsObject(socketObj);
         Handle<Object> result = global->NewInstance();
         TiTCPSocketObject* socket = (TiTCPSocketObject*)TiObject::getTiObjectFromJsObject(socketObj);
-        TiTCPSocketObject* inBoundSocket = TiTCPSocketObject::createTCP(socket->getNativeObjectFactory());
-        inBoundSocket->setValue(result);
-        TiObject::setTiObjectToJsObject(result, inBoundSocket);
-        NativeTCPSocketObject* inBoundNative = (NativeTCPSocketObject*)inBoundSocket->getNativeObject();
+        TiTCPSocketObject* inBoundSocketObject = TiTCPSocketObject::createTCP(socket->getNativeObjectFactory());
+        inBoundSocketObject->setValue(result);
+        TiObject::setTiObjectToJsObject(result, inBoundSocketObject);
+        NativeTCPSocketObject* inBoundNative = (NativeTCPSocketObject*)inBoundSocketObject->getNativeObject();
+        //NativeTCPSocketObject* inBoundNative = NativeTCPSocketObject::createTCPSocket();
         inBoundNative->tcpClient_ =  inboundSocket;
         inBoundNative->socketState_ = SOCKET_STATE_CONNECTED;
         inBoundNative->port_ = inboundSocket->peerPort();
         inBoundNative->hostName_ = inboundSocket->peerAddress().toString();
-        eventContainer_->setV8ValueProperty("inbound", inBoundSocket->getValue());
+        eventContainer_->setV8ValueProperty("inbound", result);
+        
+QObject::connect(inboundSocket, SIGNAL(readyRead()), inBoundNative->eventHandler_, SLOT(readyRead()));
+qDebug() << "here 04";
+        //inBoundNative->initialize();
+qDebug() << "here 05";
+        //inBoundNative->setupEvents(socket->getNativeObjectFactory()->getEventContainerFactory());
+qDebug() << "here 06";
+        //inBoundSocketObject->setNativeObject(inBoundNative);
+qDebug() << "here 06b";
+        
         eventContainer_->fireEvent();
     }
 

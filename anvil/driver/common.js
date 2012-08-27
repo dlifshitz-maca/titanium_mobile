@@ -419,6 +419,7 @@ module.exports = new function() {
 		};
 
 		var updateAppjsCallback = function() {
+util.log("configDir: " + configDir);
 			if (path.existsSync(configDir + "/app.js")) {
 				util.runCommand("cp -r " + configDir + "/app.js " + harnessPlatformDir + "/harness/Resources", util.logStdout, function(error) {
 					if (error !== null) {

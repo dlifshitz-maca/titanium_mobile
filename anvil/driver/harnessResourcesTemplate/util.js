@@ -47,7 +47,7 @@ module.exports = new function() {
 
 	this.socketListen = function(acceptedMessage) {
 		var pumpCallback = function(e) {
-			if (e.bytesProcessed == -1) { // EOF
+			if (e.bytesProcessed == -1 && e.errorState == 0) { // EOF
 				Ti.API.info("<EOF> - Can't perform any more operations on connected socket");
 
 			} else if (e.errorDescription == null || e.errorDescription == "") {
@@ -63,9 +63,10 @@ module.exports = new function() {
 		    port: harnessGlobal.socketPort,
 		    accepted: function(e) {
     		    driverSocket = e.inbound;
-
-				var readyMessage = {type: "ready"};
-    		    driverSocket.write(Ti.createBuffer({value: JSON.stringify(readyMessage)}));
+driverSocket.error = function(e) {
+    Ti.API.error("driverSocket.error: " + JSON.stringify(e));
+};
+				driverSocket.write(Ti.createBuffer({value: JSON.stringify(acceptedMessage)}));
 
     		    Ti.Stream.pump(driverSocket, pumpCallback, 1024, true);
     		},
