@@ -136,6 +136,7 @@ public slots:
         inBoundNative->port_ = inboundSocket->peerPort();
         inBoundNative->hostName_ = inboundSocket->peerAddress().toString();
         eventContainer_->setV8ValueProperty("inbound", inBoundSocket->getValue());
+        QObject::connect(inBoundNative->tcpClient_, SIGNAL(error(QAbstractSocket::SocketError)), inBoundNative->eventHandler_, SLOT(error(QAbstractSocket::SocketError)));
         eventContainer_->fireEvent();
     }
 

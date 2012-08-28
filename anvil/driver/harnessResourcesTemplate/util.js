@@ -47,11 +47,13 @@ module.exports = new function() {
 
 	this.socketListen = function(acceptedMessage) {
 		var pumpCallback = function(e) {
-			if (e.bytesProcessed == -1) { // EOF
+			if (e.bytesProcessed == -1 && e.errorState == 0) { // EOF
 				Ti.API.info("<EOF> - Can't perform any more operations on connected socket");
 
 			} else if (e.errorDescription == null || e.errorDescription == "") {
 				var data = e.buffer.toString();
+                Ti.API.info("buffer: " + e.buffer.length + " : " + data.length);
+				Ti.API.info("data: " + data);
 				harnessGlobal.common.processDriverData(data);
 
 			} else {
@@ -63,14 +65,17 @@ module.exports = new function() {
 		    port: harnessGlobal.socketPort,
 		    accepted: function(e) {
     		    driverSocket = e.inbound;
+                driverSocket.error = function(e) {
+                    Ti.API.error("driverSocket error: " + JSON.stringify(e));
+                };
 
-				var readyMessage = {type: "ready"};
-    		    driverSocket.write(Ti.createBuffer({value: JSON.stringify(readyMessage)}));
+    		    driverSocket.write(Ti.createBuffer({value: JSON.stringify(acceptedMessage)}));
 
     		    Ti.Stream.pump(driverSocket, pumpCallback, 1024, true);
     		},
     		error: function(e) {
-				e.socket.close();
+				Ti.API.error("listenSocket error: " + JSON.stringify(e));
+				//e.socket.close();
 			}
 		});
 		listenSocket.listen();

@@ -14,6 +14,8 @@
 #include "TiObject.h"
 #include "TiV8Event.h"
 
+#include <QCoreApplication>
+
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <v8.h>
 #pragma GCC diagnostic warning "-Wunused-parameter"
@@ -422,25 +424,29 @@ int NativeTCPSocketObject::read(NativeBufferObject* buffer, int offset, int leng
     }
     int bufferLength = buffer->bufferSize();
     int bytesRead = -1;
-    if (tcpClient_->waitForReadyRead())
+    tcpClient_->waitForReadyRead(5000);
+    QCoreApplication::processEvents();
+    if (tcpClient_->bytesAvailable() > 0 || tcpClient_->waitForReadyRead(5000))
     {
         int bytes = tcpClient_->bytesAvailable();
         if (bytes != 0)
         {
             QByteArray readData;
+            int readLength = 0;
             if (offset != -1 && length != -1)
             {
                 if (length < 0 || offset < 0 || (offset >= bufferLength))
                 {
                     throw NativeException(Native::Msg::Out_of_bounds);
                 }
-                readData = tcpClient_->read(min(length, bufferLength - offset));
+                readLength = min(length, bufferLength - offset);
             }
             else
             {
-                readData = tcpClient_->read(bufferLength);
+                readLength = bufferLength;
             }
 
+            readData = tcpClient_->read(min(bytes, readLength)).append('\0');
             if (readData.isEmpty())
             {
                 eventHandler_->error(tcpClient_->error());
