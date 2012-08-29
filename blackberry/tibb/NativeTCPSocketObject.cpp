@@ -424,8 +424,6 @@ int NativeTCPSocketObject::read(NativeBufferObject* buffer, int offset, int leng
     }
     int bufferLength = buffer->bufferSize();
     int bytesRead = -1;
-    tcpClient_->waitForReadyRead(5000);
-    QCoreApplication::processEvents();
     if (tcpClient_->bytesAvailable() > 0 || tcpClient_->waitForReadyRead(5000))
     {
         int bytes = tcpClient_->bytesAvailable();
